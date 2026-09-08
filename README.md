@@ -1,5 +1,11 @@
 # whatisit-nl2sh
 
+[![CI](https://github.com/ThorOdinson246/whatisit-nl2sh/actions/workflows/ci.yml/badge.svg)](https://github.com/ThorOdinson246/whatisit-nl2sh/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/whatisit?logo=pypi&logoColor=white)](https://pypi.org/project/whatisit/)
+[![model downloads](https://img.shields.io/badge/dynamic/json?url=https%3A//huggingface.co/api/models/ThorOdinson246/nl2sh-1.5b-Q4_K_M%3Fexpand%3DdownloadsAllTime&query=%24.downloadsAllTime&label=model%20downloads&color=FFD21E&logo=huggingface&logoColor=black)](https://huggingface.co/ThorOdinson246/nl2sh-1.5b-Q4_K_M)
+[![stars](https://img.shields.io/github/stars/ThorOdinson246/whatisit-nl2sh?style=flat&logo=github&logoColor=white&color=e3b341)](https://github.com/ThorOdinson246/whatisit-nl2sh/stargazers)
+[![license](https://img.shields.io/github/license/ThorOdinson246/whatisit-nl2sh?color=blue)](LICENSE)
+
 Ask for a shell command in plain English. Runs on your own machine on CPU, no
 GPU and no network. Answers in about a second. Optionally any OpenAI-compatible
 endpoint instead.
