@@ -823,7 +823,7 @@ SUBCOMMANDS = {"setup", "doctor", "stop", "config"}
 _FLAGS_NOARG = {"-e", "--execute", "-q", "--quiet", "-t", "--timing", "--oneshot",
                 "--host-context", "--no-host-context",
                 "--grammar", "--no-grammar", "--debug", "-y", "--yes",
-                "-p", "--prefill-command"}
+                "-p", "--prefill-command", "-V", "--version"}
 _FLAGS_ARG = {"-n", "--num"}
 _FLAGS_QUERY_ARG = {"--port", "--threads", "--ctx-size", "--model",
                     "--idle-timeout"}
@@ -849,7 +849,7 @@ class QueryArgs:
         self.port, self.threads, self.ctx_size, self.model = None, None, None, None
         self.idle_timeout = None
         self.host_context, self.grammar, self.debug, self.yes = None, None, False, False
-        self.prefill_command = False
+        self.prefill_command, self.version = False, False
         i = 0
         while i < len(argv):
             a = argv[i]
@@ -857,7 +857,9 @@ class QueryArgs:
                 i += 1
                 break
             if a in _FLAGS_NOARG:
-                if a == "--host-context":
+                if a in ("-V", "--version"):
+                    self.version = True
+                elif a == "--host-context":
                     self.host_context = True
                 elif a == "--no-host-context":
                     self.host_context = False
@@ -958,6 +960,9 @@ def main(argv=None) -> int:
     except ValueError as e:
         warn(f"whatisit: {e}")
         return 2
+    if getattr(args, "version", False):
+        out(f"whatisit {__version__}")
+        return 0
     if not args.words:
         build_parser().print_help()
         return 0

@@ -166,6 +166,31 @@ class TestCliVersionFlag:
         assert rc == 0
         assert captured["prompt"] == "check python version"
 
+    def test_version_flag_preceded_by_options(self, capsys):
+        rc = cli.main(["-q", "--version"])
+        assert rc == 0
+        captured = capsys.readouterr()
+        assert captured.out.strip() == f"whatisit {cli.__version__}"
+
+    def test_dash_v_preceded_by_options(self, capsys):
+        rc = cli.main(["--debug", "-V"])
+        assert rc == 0
+        captured = capsys.readouterr()
+        assert captured.out.strip() == f"whatisit {cli.__version__}"
+
+    def test_query_with_dash_dash_version(self, monkeypatch):
+        captured = {}
+
+        def fake_generate(prompt, cfg, n=1, force_oneshot=False, quiet=False,
+                          for_execution=False):
+            captured["prompt"] = prompt
+            return (["cat -V"], 0.01, "server")
+
+        monkeypatch.setattr(cli.engine, "generate", fake_generate)
+        rc = cli.main(["--", "-V"])
+        assert rc == 0
+        assert captured["prompt"] == "-V"
+
 
 # --------------------------------------------------------------- cmd_query
 
