@@ -112,6 +112,61 @@ class TestSubcommandRoutingIsFirstTokenOnly:
         assert cli.SUBCOMMANDS == {"setup", "doctor", "stop", "config"}
 
 
+class TestCliVersionFlag:
+    def test_version_flag_prints_version_and_exits_cleanly(self, capsys):
+        rc = cli.main(["--version"])
+        assert rc == 0
+        captured = capsys.readouterr()
+        assert captured.out.strip() == f"whatisit {cli.__version__}"
+
+    def test_dash_v_prints_version_and_exits_cleanly(self, capsys):
+        rc = cli.main(["-V"])
+        assert rc == 0
+        captured = capsys.readouterr()
+        assert captured.out.strip() == f"whatisit {cli.__version__}"
+
+    def test_version_flag_does_not_call_engine_generate(self, monkeypatch, capsys):
+        called = False
+
+        def fail_generate(*args, **kwargs):
+            nonlocal called
+            called = True
+            raise AssertionError("engine.generate should not be called for --version")
+
+        monkeypatch.setattr(cli.engine, "generate", fail_generate)
+        rc = cli.main(["--version"])
+        assert rc == 0
+        assert not called
+        assert capsys.readouterr().out.strip() == f"whatisit {cli.__version__}"
+
+    def test_parser_version_argument(self, capsys):
+        parser = cli.build_parser()
+        with pytest.raises(SystemExit) as exc_info:
+            parser.parse_args(["--version"])
+        assert exc_info.value.code == 0
+        assert f"whatisit {cli.__version__}" in capsys.readouterr().out
+
+    def test_parser_dash_v_argument(self, capsys):
+        parser = cli.build_parser()
+        with pytest.raises(SystemExit) as exc_info:
+            parser.parse_args(["-V"])
+        assert exc_info.value.code == 0
+        assert f"whatisit {cli.__version__}" in capsys.readouterr().out
+
+    def test_query_containing_version_word_is_treated_as_query(self, monkeypatch):
+        captured = {}
+
+        def fake_generate(prompt, cfg, n=1, force_oneshot=False, quiet=False,
+                          for_execution=False):
+            captured["prompt"] = prompt
+            return (["python3 --version"], 0.01, "server")
+
+        monkeypatch.setattr(cli.engine, "generate", fake_generate)
+        rc = cli.main(["check", "python", "version"])
+        assert rc == 0
+        assert captured["prompt"] == "check python version"
+
+
 # --------------------------------------------------------------- cmd_query
 
 class TestCmdQueryQuietDangerRefusal:

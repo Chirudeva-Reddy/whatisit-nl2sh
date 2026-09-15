@@ -18,8 +18,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from . import __version__, engine, fetch
 from . import config as cfg_mod
-from . import engine, fetch
 from .safety import check
 
 # Colour only when attached to a terminal, and honour NO_COLOR. Tracked per
@@ -755,6 +755,8 @@ def build_parser() -> argparse.ArgumentParser:
                "  whatisit -e 'count lines in every python file'\n"
                "  eval \"$(whatisit -q 'show disk usage')\"",
         formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("-V", "--version", action="version",
+                    version=f"%(prog)s {__version__}")
     ap.add_argument("words", nargs="*", help="your request, in plain English")
     ap.add_argument("-n", "--num", type=int, default=1, metavar="N",
                     help="show N alternative commands (default 1)")
@@ -945,6 +947,10 @@ def main(argv=None) -> int:
 
     if argv[0] in ("-h", "--help"):
         build_parser().print_help()
+        return 0
+
+    if argv[0] in ("-V", "--version"):
+        out(f"whatisit {__version__}")
         return 0
 
     try:
