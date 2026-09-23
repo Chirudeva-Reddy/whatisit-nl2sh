@@ -745,6 +745,7 @@ def cmd_config(args, cfg: dict) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Build and return the top-level argument parser with subcommands and flags."""
     ap = argparse.ArgumentParser(
         prog="whatisit",
         description="Natural language to shell command, local by default. "
@@ -930,6 +931,7 @@ class QueryArgs:
 
 
 def main(argv=None) -> int:
+    """Entry point for the whatisit CLI."""
     argv = list(sys.argv[1:] if argv is None else argv)
     # Before load_config, so an existing config.json is read from its new home.
     # Goes to stderr to keep `$(whatisit -q ...)` substitutions clean.

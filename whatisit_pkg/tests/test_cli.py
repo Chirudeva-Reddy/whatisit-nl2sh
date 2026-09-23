@@ -113,19 +113,23 @@ class TestSubcommandRoutingIsFirstTokenOnly:
 
 
 class TestCliVersionFlag:
+    """Tests for the --version and -V CLI flags."""
     def test_version_flag_prints_version_and_exits_cleanly(self, capsys):
+        """Ensure --version prints the version string and exits with 0."""
         rc = cli.main(["--version"])
         assert rc == 0
         captured = capsys.readouterr()
         assert captured.out.strip() == f"whatisit {cli.__version__}"
 
     def test_dash_v_prints_version_and_exits_cleanly(self, capsys):
+        """Ensure -V prints the version string and exits with 0."""
         rc = cli.main(["-V"])
         assert rc == 0
         captured = capsys.readouterr()
         assert captured.out.strip() == f"whatisit {cli.__version__}"
 
     def test_version_flag_does_not_call_engine_generate(self, monkeypatch, capsys):
+        """Ensure --version short-circuits before attempting text generation."""
         called = False
 
         def fail_generate(*args, **kwargs):
@@ -140,6 +144,7 @@ class TestCliVersionFlag:
         assert capsys.readouterr().out.strip() == f"whatisit {cli.__version__}"
 
     def test_parser_version_argument(self, capsys):
+        """Ensure the parser handles --version correctly."""
         parser = cli.build_parser()
         with pytest.raises(SystemExit) as exc_info:
             parser.parse_args(["--version"])
@@ -147,6 +152,7 @@ class TestCliVersionFlag:
         assert f"whatisit {cli.__version__}" in capsys.readouterr().out
 
     def test_parser_dash_v_argument(self, capsys):
+        """Ensure the parser handles -V correctly."""
         parser = cli.build_parser()
         with pytest.raises(SystemExit) as exc_info:
             parser.parse_args(["-V"])
@@ -154,6 +160,7 @@ class TestCliVersionFlag:
         assert f"whatisit {cli.__version__}" in capsys.readouterr().out
 
     def test_query_containing_version_word_is_treated_as_query(self, monkeypatch):
+        """Ensure the word 'version' is treated as a query, not a flag."""
         captured = {}
 
         def fake_generate(prompt, cfg, n=1, force_oneshot=False, quiet=False,
@@ -167,18 +174,21 @@ class TestCliVersionFlag:
         assert captured["prompt"] == "check python version"
 
     def test_version_flag_preceded_by_options(self, capsys):
+        """Ensure --version works even if preceded by other options."""
         rc = cli.main(["-q", "--version"])
         assert rc == 0
         captured = capsys.readouterr()
         assert captured.out.strip() == f"whatisit {cli.__version__}"
 
     def test_dash_v_preceded_by_options(self, capsys):
+        """Ensure -V works even if preceded by other options."""
         rc = cli.main(["--debug", "-V"])
         assert rc == 0
         captured = capsys.readouterr()
         assert captured.out.strip() == f"whatisit {cli.__version__}"
 
     def test_query_with_dash_dash_version(self, monkeypatch):
+        """Ensure literal -V is passed as query after -- separator."""
         captured = {}
 
         def fake_generate(prompt, cfg, n=1, force_oneshot=False, quiet=False,
